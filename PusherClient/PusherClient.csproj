@@ -12,6 +12,7 @@
     <RepositoryUrl>https://github.com/LykkeCity/Lykke.PusherClient</RepositoryUrl>
     <Description>A fork of https://github.com/pusher-community/pusher-websocket-dotnet</Description>
     <FileVersion>1.2.1.0</FileVersion>
+    <PackageProjectUrl>https://github.com/LykkeCity/Lykke.PusherClient</PackageProjectUrl>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Lykke.Common" Version="3.0.2" />
