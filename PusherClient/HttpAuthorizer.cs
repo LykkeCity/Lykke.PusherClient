@@ -1,26 +1,36 @@
 ﻿using System;
-using System.Net;
+using System.Collections.Generic;
+using System.Net.Http;
 
-namespace PusherClient
+namespace PusherClient.DotNetCore
 {
     public class HttpAuthorizer: IAuthorizer
     {
-        private Uri _authEndpoint;
+        private readonly Uri authEndpoint;
         public HttpAuthorizer(string authEndpoint)
         {
-            _authEndpoint = new Uri(authEndpoint);
+            this.authEndpoint = new Uri(authEndpoint);
         }
 
         public string Authorize(string channelName, string socketId)
         {
-            string authToken = null;
+            string authToken;
 
-            using (var webClient = new System.Net.WebClient())
+
+            using (var client = new HttpClient())
             {
-                string data = String.Format("channel_name={0}&socket_id={1}", channelName, socketId);
-                webClient.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-                authToken = webClient.UploadString(_authEndpoint, "POST", data);
+                authToken = client.PostAsync(authEndpoint, new FormUrlEncodedContent(new Dictionary<string, string>()
+                    {
+                        { "channel_name", channelName },
+                        { "socket_id", socketId }
+                    })).Result.Content.ReadAsStringAsync().Result;
             }
+            
+//            using (var webClient = new WebClient())
+//            {
+//                webClient.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
+//                authToken = webClient.UploadString(authEndpoint, "POST", $"channel_name={channelName}&socket_id={socketId}");
+//            }
 
             return authToken;
         }
