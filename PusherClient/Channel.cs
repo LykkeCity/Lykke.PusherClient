@@ -1,50 +1,36 @@
-﻿namespace PusherClient
+﻿namespace PusherClient.DotNetCore
 {
     public delegate void SubscriptionEventHandler(object sender);
-
+    
     public class Channel : EventEmitter
     {
-        private Pusher _pusher = null;
-        private bool _isSubscribed = false;
+        private readonly Pusher pusher;
 
         public event SubscriptionEventHandler Subscribed;
-        public string Name = null;
+        private readonly string name;
 
-        public bool IsSubscribed
-        {
-            get
-            {
-                return _isSubscribed;
-            }
-        }
+        public bool IsSubscribed { get; private set; }
 
         public Channel(string channelName, Pusher pusher)
         {
-            _pusher = pusher;
-            this.Name = channelName;
+            this.pusher = pusher;
+            name = channelName;
         }
 
         internal virtual void SubscriptionSucceeded(string data)
         {
-            if (_isSubscribed)
+            if (IsSubscribed)
                 return;
 
-            _isSubscribed = true;
+            IsSubscribed = true;
 
-            if(Subscribed != null)
-                Subscribed(this);
+            Subscribed?.Invoke(this);
         }
 
         public void Unsubscribe()
         {
-            _isSubscribed = false;
-            _pusher.Unsubscribe(this.Name);
+            IsSubscribed = false;
+            pusher.Unsubscribe(name);
         }
-
-        public void Trigger(string eventName, object obj)
-        {
-            _pusher.Trigger(this.Name, eventName, obj);
-        }
-
     }
 }

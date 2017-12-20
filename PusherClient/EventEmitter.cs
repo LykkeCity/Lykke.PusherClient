@@ -1,50 +1,50 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
-namespace PusherClient
+namespace PusherClient.DotNetCore
 {
     public class EventEmitter
     {
-        private Dictionary<string, List<Action<dynamic>>> _eventListeners = new Dictionary<string, List<Action<dynamic>>>();
-        private List<Action<string, dynamic>> _generalListeners = new List<Action<string, dynamic>>();
+        private readonly Dictionary<string, List<Action<dynamic>>> eventListeners = new Dictionary<string, List<Action<dynamic>>>();
+        private readonly List<Action<string, dynamic>> generalListeners = new List<Action<string, dynamic>>();
 
         public void Bind(string eventName, Action<dynamic> listener)
         {
-            if(_eventListeners.ContainsKey(eventName))
+            if(eventListeners.ContainsKey(eventName))
             {
-                _eventListeners[eventName].Add(listener);
+                eventListeners[eventName].Add(listener);
             }
             else
             {
                 List<Action<dynamic>> listeners = new List<Action<dynamic>>();
                 listeners.Add(listener);
-                _eventListeners.Add(eventName, listeners);
+                eventListeners.Add(eventName, listeners);
             }
         }
 
         public void BindAll(Action<string, dynamic> listener)
         {
-            _generalListeners.Add(listener);
+            generalListeners.Add(listener);
         }
 
         public void Unbind(string eventName)
         {
-            _eventListeners.Remove(eventName);
+            eventListeners.Remove(eventName);
         }
 
         public void Unbind(string eventName, Action<dynamic> listener)
         {
-            if(_eventListeners.ContainsKey(eventName))
+            if(eventListeners.ContainsKey(eventName))
             {
-                _eventListeners[eventName].Remove(listener);
+                eventListeners[eventName].Remove(listener);
             }
         }
 
         public void UnbindAll()
         {
-          _eventListeners.Clear();
-          _generalListeners.Clear();
+            eventListeners.Clear();
+            generalListeners.Clear();
         }
 
         internal void EmitEvent(string eventName, string data)
@@ -52,14 +52,14 @@ namespace PusherClient
             var obj = JsonConvert.DeserializeObject<dynamic>(data);
 
             // Emit to general listeners regardless of event type
-            foreach (var action in _generalListeners)
+            foreach (var action in generalListeners)
             {
                 action(eventName, obj);
             }
 
-            if (_eventListeners.ContainsKey(eventName))
+            if (eventListeners.ContainsKey(eventName))
             {
-                foreach (var action in _eventListeners[eventName])
+                foreach (var action in eventListeners[eventName])
                 {
                     action(obj);
                 }

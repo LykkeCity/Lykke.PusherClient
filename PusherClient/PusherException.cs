@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PusherClient
+namespace PusherClient.DotNetCore
 {
     public class PusherException : Exception
     {
@@ -11,6 +11,5 @@ namespace PusherClient
         {
             PusherCode = code;
         }
-
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace PusherClient
+﻿namespace PusherClient.DotNetCore
 {
     public enum ConnectionState
     {
